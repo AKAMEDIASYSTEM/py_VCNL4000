@@ -1,5 +1,6 @@
-# Example sketch for talking to the VCNL4000 i2c proximity/light sensor
-# Written by Adafruit! Public domain.
+# Example class for talking to the VCNL4000 i2c proximity/light sensor
+# Very heavily based on an Arduino demo written by Adafruit - thanks!
+# (Python class by AKA MEDIA SYSTEM, also public domain)
 # To use: Connect VCC to 3.3-5V (5V is best if it is available), GND to
 #         ground, SCL to i2c clock (on classic arduinos, Analog 5), SDA
 #         to i2c data (on classic arduinos Analog 4). The 3.3v pin is
