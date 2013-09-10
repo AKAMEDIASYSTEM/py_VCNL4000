@@ -41,7 +41,7 @@ class VCNL4000():
     rev = self.i2c.readU8(self.VCNL4000_PRODUCTID)
     if((rev & 0xF0) != 0x10):
       print 'Sensor not found wtf'
-    self.i2c.write8(self.VCNL4000_IRLED, 10) # set to 10 * 10mA = 100mA
+    self.i2c.write8(self.VCNL4000_IRLED, 5) # set to 5 * 10mA = 100mA
     current = self.i2c.readU8(self.VCNL4000_IRLED)
     print 'we think current is set to ', current
     sigFreq = self.i2c.readU8(self.VCNL4000_SIGNALFREQ)
@@ -52,7 +52,8 @@ class VCNL4000():
 
   def setLEDcurrent(self, cur):
     if (cur > 20) or (cur < 0):
-      cur = 10
+      cur = 5 # setting this to 50mA; online ppl report trouble with I2C bus at over 60mA
+      # more here: http://forums.adafruit.com/viewtopic.php?f=19&t=24263&p=125769&hilit=vcnl#p125769
     self.i2c.write8(self.VCNL4000_IRLED, cur)
 
   def continuousConversionOn(self):
@@ -89,13 +90,19 @@ class VCNL4000():
     while True:
       result = self.i2c.readU8(self.VCNL4000_COMMAND)
       if(result & self.VCNL4000_PROXIMITYREADY):
-        return self.i2c.readU16(self.VCNL4000_PROXIMITYDATA)
+        h = self.i2c.readList(self.VCNL4000_PROXIMITYDATA,2)
+        result = ((h[0]<<8)|h[1])>>4
+        return result
       time.sleep(0.001)
+      # time.sleep(0.002)
 
   def readAmbient(self):
     self.i2c.write8(self.VCNL4000_COMMAND, self.VCNL4000_MEASUREAMBIENT)
     while True:
       result = self.i2c.readU8(self.VCNL4000_COMMAND)
       if(result & self.VCNL4000_AMBIENTREADY):
-        return self.i2c.readU16(self.VCNL4000_AMBIENTDATA)
+        h = self.i2c.readList(self.VCNL4000_AMBIENTDATA,2)
+        result = ((h[0]<<8)|h[1])>>4
+        return result
       time.sleep(0.001)
+      # time.sleep(0.002)
